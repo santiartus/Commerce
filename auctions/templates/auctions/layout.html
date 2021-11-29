@@ -21,6 +21,9 @@
                 <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
             </li>
             {% if user.is_authenticated %}
+                <button type="button" class="btn btn-primary btn-new-blue">
+                    <a class="nav-link" href="{% url 'crear_listado' %}">Create Listing</a>
+                </button>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                 </li>

@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.db.models.deletion import RestrictedError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, request
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms
@@ -12,8 +12,13 @@ from .models import User, Auction, Comentarios, Bid
 class CrearListadoForm(forms.ModelForm):
     titulo = forms.CharField(label="Titulo", max_length=15, required=True)
     descripcion = forms.CharField(label="Descripcion")
-    url_imagen = forms.URLField(label="URL de la Imagen", required=True)
-    #categoria = forms.ComboField(required=True, choice=CATE)
+    imagen = forms.URLField(label="URL de la Imagen", required=True)
+    pujaActual = forms.FloatField(label="Precio", required=True)
+    categoria = forms.ChoiceField(required=True, choices =Auction.CATEGORIAS)
+
+    class Meta:
+        model = Auction
+        fields = ["titulo", "descripcion", "categoria", "imagen", "pujaActual"]
 
 def index(request):
     return render(request, "auctions/index.html")
@@ -77,9 +82,23 @@ def crear_listado(request):
             titulo = form.cleaned_data["titulo"]
             descripcion = form.cleaned_data["descripcion"]
             url_imagen = form.cleaned_data["url_imagen"]
-            category = form.cleaned_data["categoria"]
+            categoria = form.cleaned_data["categoria"]
+            pujaActual = form.cleaned_data["precio"]
 
+            auction = Auction(
+                creador = User.objects.get(pk=request.user.id),
+                titulo = titulo,
+                descripcion = descripcion,
+                imagen = url_imagen,
+                categoria = categoria,
+                pujaActual = pujaActual,
+            )
+            auction.save()
         else:
             return render(request, "auctions/crear_listado.html", {
                 "form": form
-            })    
+            })   
+
+    return render(request, "auctions/crear_listado.html", {
+        "form": CrearListadoForm(),
+    })

@@ -49,7 +49,7 @@ class Comentarios(models.Model):
 
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     comentario = models.TextField(blank=True)
-    fechaComentario = models.DateTimeField(auto_now_add=True, default=False)
+    fechaComentario = models.DateTimeField(auto_now_add=True)
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE, default=False)
 
     def __str__(self):
